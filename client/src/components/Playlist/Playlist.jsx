@@ -1,35 +1,66 @@
 import { useState } from 'react'
 import axios from 'axios'
+import PropTypes from 'prop-types'
 import './Playlist.css'
-const Playlist = () => {
+
+const Playlist = ({ token }) => {
   const [playlistName, setPlaylistName] = useState('')
-  const [userId, setUserId] = useState('')
-  const accessToken = new URLSearchParams(window.location.hash).get(
-    'access_token'
-  )
+  const [trackUris, setTrackUris] = useState([])
+  const [message, setMessage] = useState('')
+
   const createPlaylist = async () => {
-    await axios.post('/api/playlist', {
-      accessToken,
-      userId,
-      playlistName
-    })
+    try {
+      const userResponse = await axios.get('http://localhost:5000/spotify/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      const userId = userResponse.data.id
+      await axios.post(
+        'http://localhost:5000/spotify/playlist',
+        {
+          userId,
+          playlistName,
+          trackUris
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      setMessage('Playlist created successfully!')
+    } catch (error) {
+      console.error('Error creating playlist', error)
+      setMessage('Failed to create playlist')
+    }
   }
+
   return (
-    <div className="playlist-container">
+    <div>
+      <h1>Create Playlist</h1>
       <input
         type="text"
-        placeholder="Enter Playlist Name"
+        placeholder="Playlist Name"
         value={playlistName}
         onChange={(e) => setPlaylistName(e.target.value)}
       />
       <input
         type="text"
-        placeholder="Enter Your User ID"
-        value={userId}
-        onChange={(e) => setUserId(e.target.value)}
+        placeholder="Track URIs (comma separated)"
+        value={trackUris}
+        onChange={(e) => setTrackUris(e.target.value.split(','))}
       />
       <button onClick={createPlaylist}>Create Playlist</button>
+      {message && <p>{message}</p>}
     </div>
   )
 }
+
+Playlist.propTypes = {
+  token: PropTypes.string.isRequired
+}
+
 export default Playlist

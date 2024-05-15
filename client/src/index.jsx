@@ -1,10 +1,10 @@
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import App from './components/App'
-import Profile from './components/Profile'
-import Login from './components/Login'
-import Playlist from './components/Playlist'
-import './App.css'
+import App from './components/App/App'
+import Profile from './components/Profile/Profile'
+import Login from './components/Login/Login'
+import Playlist from './components/Playlist/Playlist'
+import './index.css'
 
 const container = document.getElementById('root')
 const root = createRoot(container)

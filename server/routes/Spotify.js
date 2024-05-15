@@ -20,25 +20,25 @@ router.get('/callback', async (req, res) => {
   const code = req.query.code || null
   const authOptions = {
     url: 'https://accounts.spotify.com/api/token',
-    form: {
+    data: new URLSearchParams({
       code: code,
       redirect_uri: redirect_uri,
       grant_type: 'authorization_code'
-    },
+    }).toString(),
     headers: {
       Authorization:
         'Basic ' +
-        Buffer.from(client_id + ':' + client_secret).toString('base64')
-    },
-    json: true
+        Buffer.from(client_id + ':' + client_secret).toString('base64'),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
   }
 
   try {
-    const response = await axios.post(authOptions.url, authOptions.form, {
+    const response = await axios.post(authOptions.url, authOptions.data, {
       headers: authOptions.headers
     })
     const accessToken = response.data.access_token
-    res.redirect(`http://localhost:3000?access_token=${accessToken}`)
+    res.redirect(`http://localhost:5173?access_token=${accessToken}`)
   } catch (error) {
     console.error(error)
     res.status(500).send('Authentication failed')
