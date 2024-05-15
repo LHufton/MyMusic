@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import Login from './components/Login/Login'
-import Profile from './components/Profile/Profile'
-import Playlist from './components/Playlist/Playlist'
+import Login from '../Login/Login'
+import Profile from '../Profile/Profile'
+import Playlist from '../Playlist/Playlist'
 import ArtistSearch from './components/ArtistSearch/ArtistSearch'
 
 function App() {
