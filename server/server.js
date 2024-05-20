@@ -1,7 +1,6 @@
-const express = require('express')
-const axios = require('axios')
-const dotenv = require('dotenv')
-const spotifyRoutes = require('./routes/Spotify')
+import express from 'express'
+import dotenv from 'dotenv'
+import spotifyRoutes from './routes/Spotify.js'
 
 dotenv.config()
 
