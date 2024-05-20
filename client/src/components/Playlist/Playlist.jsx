@@ -10,7 +10,7 @@ const Playlist = ({ token }) => {
 
   const createPlaylist = async () => {
     try {
-      const userResponse = await axios.get('http://localhost:5173/spotify/me', {
+      const userResponse = await axios.get('http://localhost:5000/spotify/me', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -18,7 +18,7 @@ const Playlist = ({ token }) => {
 
       const userId = userResponse.data.id
       await axios.post(
-        'http://localhost:5173/spotify/playlist',
+        'http://localhost:5000/spotify/playlist',
         {
           userId,
           playlistName,
