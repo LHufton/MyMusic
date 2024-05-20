@@ -39,7 +39,7 @@ const App = () => {
           <Profile token={token} />
         </div>
       ) : (
-        <a href={`http://localhost:5000/spotify/login`}>Login to Spotify</a>
+        <a href={`http://localhost:5001/spotify/login`}>Login to Spotify</a>
       )}
     </div>
   )

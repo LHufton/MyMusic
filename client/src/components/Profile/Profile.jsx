@@ -8,7 +8,7 @@ const Profile = ({ token }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/spotify/me', {
+        const response = await axios.get('http://localhost:5001/spotify/me', {
           headers: {
             Authorization: `Bearer ${token}`
           }
