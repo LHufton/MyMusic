@@ -1,0 +1,16 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.x.x",
+    "express-session": "^1.x.x",
+    "passport": "^0.x.x",
+    "passport-spotify": "^2.x.x",
+    "dotenv": "^16.4.5"
+  }
+}
