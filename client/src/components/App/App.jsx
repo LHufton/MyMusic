@@ -6,6 +6,7 @@ import './App.css'
 const App = () => {
   const [token, setToken] = useState('')
   const navigate = useNavigate()
+  const backendUrl = import.meta.env.VITE_BACKEND_URL
 
   useEffect(() => {
     const hash = window.location.hash
@@ -39,7 +40,7 @@ const App = () => {
           <Profile token={token} />
         </div>
       ) : (
-        <a href={`http://localhost:5001/spotify/login`}>Login to Spotify</a>
+        <a href={`${backendUrl}/login`}>Login to Spotify</a>
       )}
     </div>
   )

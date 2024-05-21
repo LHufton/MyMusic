@@ -1,10 +1,12 @@
 import './Login.css'
 
 const Login = () => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL
+
   return (
     <div>
       <h1>Login</h1>
-      <a href={`http://localhost:5001/spotify/login`}>Login to Spotify</a>
+      <a href={`${backendUrl}/login`}>Login to Spotify</a>
     </div>
   )
 }

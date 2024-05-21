@@ -7,14 +7,17 @@ const client_id = process.env.SPOTIFY_CLIENT_ID
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET
 const redirect_uri = process.env.SPOTIFY_REDIRECT_URI
 
+console.log('SPOTIFY_CLIENT_ID:', client_id)
+console.log('SPOTIFY_REDIRECT_URI:', redirect_uri)
+
 router.get('/login', (req, res) => {
   const scopes =
     'user-read-private user-read-email playlist-modify-private playlist-modify-public'
-  res.redirect(
-    `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${encodeURIComponent(
-      scopes
-    )}&redirect_uri=${encodeURIComponent(redirect_uri)}`
-  )
+  const url = `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${encodeURIComponent(
+    scopes
+  )}&redirect_uri=${encodeURIComponent(redirect_uri)}`
+  console.log('Redirecting to:', url)
+  res.redirect(url)
 })
 
 router.get('/callback', async (req, res) => {
