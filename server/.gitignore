@@ -1,5 +1,9 @@
 node_modules
 .env
+# SSL certificates
+server/SS1/localhost-key.pem
+server/SS1/localhost.pem
+
 logs
 *.log
 npm-debug.log*
