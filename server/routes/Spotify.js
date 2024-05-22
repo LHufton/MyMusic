@@ -1,5 +1,5 @@
 import express from 'express'
-import axios from 'axios'
+import SpotifyWebApi from 'spotify-web-api-node'
 
 const router = express.Router()
 
@@ -7,49 +7,47 @@ const client_id = process.env.SPOTIFY_CLIENT_ID
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET
 const redirect_uri = process.env.SPOTIFY_REDIRECT_URI
 
+const spotifyApi = new SpotifyWebApi({
+  clientId: client_id,
+  clientSecret: client_secret,
+  redirectUri: redirect_uri
+})
+
 console.log('SPOTIFY_CLIENT_ID:', client_id)
 console.log('SPOTIFY_REDIRECT_URI:', redirect_uri)
 
 router.get('/login', (req, res) => {
-  const scopes =
-    "'user-read-private', 'user-read-email', 'playlist-modify-private','playlist-modify-public'"
-  const url = `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${encodeURIComponent(
-    scopes
-  )}&redirect_uri=${encodeURIComponent(redirect_uri)}`
-  console.log('Redirecting to:', url)
-  res.redirect(url)
+  const scopes = [
+    'user-read-private',
+    'user-read-email',
+    'playlist-modify-private',
+    'playlist-modify-public'
+  ]
+  const authorizeURL = spotifyApi.createAuthorizeURL(scopes, null, true)
+  console.log('Redirecting to:', authorizeURL)
+  res.redirect(authorizeURL)
 })
 
 router.get('/callback', async (req, res) => {
   const code = req.query.code || null
-  const authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    data: new URLSearchParams({
-      code: code,
-      redirect_uri: redirect_uri,
-      grant_type: 'authorization_code'
-    }).toString(),
-    headers: {
-      Authorization:
-        'Basic ' +
-        Buffer.from(client_id + ':' + client_secret).toString('base64'),
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
-  }
 
   try {
-    const response = await axios.post(authOptions.url, authOptions.data, {
-      headers: authOptions.headers
-    })
-    const accessToken = response.data.access_token
+    const data = await spotifyApi.authorizationCodeGrant(code)
+    const accessToken = data.body['access_token']
+    const refreshToken = data.body['refresh_token']
 
-    // Store the access token in the session
+    // Set the access token and refresh token on the API object
+    spotifyApi.setAccessToken(accessToken)
+    spotifyApi.setRefreshToken(refreshToken)
+
+    // Store the access token and refresh token in the session
     req.session.accessToken = accessToken
+    req.session.refreshToken = refreshToken
 
     // Redirect to frontend without exposing the token
     res.redirect('http://localhost:5173')
   } catch (error) {
-    console.error(error)
+    console.error('Error during authorization code grant:', error)
     res.status(500).send('Authentication failed')
   }
 })
@@ -59,15 +57,14 @@ router.get('/me', async (req, res) => {
   if (!accessToken) {
     return res.status(401).send('Access token missing')
   }
+
+  spotifyApi.setAccessToken(accessToken)
+
   try {
-    const response = await axios.get('https://api.spotify.com/v1/me', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    })
-    res.json(response.data)
+    const data = await spotifyApi.getMe()
+    res.json(data.body)
   } catch (error) {
-    console.error(error)
+    console.error('Error fetching user data:', error)
     res.status(500).send('Failed to fetch user data')
   }
 })
@@ -77,37 +74,22 @@ router.post('/playlist', async (req, res) => {
   if (!accessToken) {
     return res.status(401).send('Access token missing')
   }
+
   const { userId, playlistName, trackUris } = req.body
+  spotifyApi.setAccessToken(accessToken)
+
   try {
-    const createPlaylistResponse = await axios.post(
-      `https://api.spotify.com/v1/users/${userId}/playlists`,
-      {
-        name: playlistName,
-        public: false
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }
+    const createPlaylistResponse = await spotifyApi.createPlaylist(
+      userId,
+      playlistName,
+      { public: false }
     )
+    const playlistId = createPlaylistResponse.body.id
 
-    const playlistId = createPlaylistResponse.data.id
-    await axios.post(
-      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-      {
-        uris: trackUris
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }
-    )
-
+    await spotifyApi.addTracksToPlaylist(playlistId, trackUris)
     res.status(200).send('Playlist created successfully')
   } catch (error) {
-    console.error(error)
+    console.error('Error creating playlist:', error)
     res.status(500).send('Failed to create playlist')
   }
 })
