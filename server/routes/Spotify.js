@@ -12,7 +12,7 @@ console.log('SPOTIFY_REDIRECT_URI:', redirect_uri)
 
 router.get('/login', (req, res) => {
   const scopes =
-    'user-read-private user-read-email playlist-modify-private playlist-modify-public'
+    "'user-read-private', 'user-read-email', 'playlist-modify-private','playlist-modify-public'"
   const url = `https://accounts.spotify.com/authorize?response_type=code&client_id=${client_id}&scope=${encodeURIComponent(
     scopes
   )}&redirect_uri=${encodeURIComponent(redirect_uri)}`
@@ -42,7 +42,12 @@ router.get('/callback', async (req, res) => {
       headers: authOptions.headers
     })
     const accessToken = response.data.access_token
-    res.redirect(`http://localhost:5173?access_token=${accessToken}`)
+
+    // Store the access token in the session
+    req.session.accessToken = accessToken
+
+    // Redirect to frontend without exposing the token
+    res.redirect('http://localhost:5173')
   } catch (error) {
     console.error(error)
     res.status(500).send('Authentication failed')
@@ -50,7 +55,10 @@ router.get('/callback', async (req, res) => {
 })
 
 router.get('/me', async (req, res) => {
-  const accessToken = req.headers['authorization']
+  const accessToken = req.session.accessToken
+  if (!accessToken) {
+    return res.status(401).send('Access token missing')
+  }
   try {
     const response = await axios.get('https://api.spotify.com/v1/me', {
       headers: {
@@ -65,7 +73,10 @@ router.get('/me', async (req, res) => {
 })
 
 router.post('/playlist', async (req, res) => {
-  const accessToken = req.headers['authorization']
+  const accessToken = req.session.accessToken
+  if (!accessToken) {
+    return res.status(401).send('Access token missing')
+  }
   const { userId, playlistName, trackUris } = req.body
   try {
     const createPlaylistResponse = await axios.post(

@@ -59,8 +59,8 @@ const Playlist = ({ token }) => {
   )
 }
 
-Playlist.propTypes = {
-  token: PropTypes.string.isRequired
-}
+// Playlist.propTypes = {
+//   token: PropTypes.string.isRequired
+// }
 
 export default Playlist
