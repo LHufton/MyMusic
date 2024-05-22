@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Profile from '../Profile/Profile'
-// import './App.css'
+import './App.css'
 
 const App = () => {
   const [token, setToken] = useState('')
   const navigate = useNavigate()
   const backendUrl = import.meta.env.VITE_API_BASE_URL
+
+  console.log('Backend URL:', backendUrl)
 
   useEffect(() => {
     const checkToken = async () => {
