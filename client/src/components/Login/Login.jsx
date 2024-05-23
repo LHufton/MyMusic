@@ -1,12 +1,10 @@
-import './Login.css'
+import React from 'react'
 
 const Login = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
-
   return (
-    <div className="login-container">
-      <h1>Login</h1>
-      <a href={`${backendUrl}/login`}>Login to Spotify</a>
+    <div>
+      <h2>Login Page</h2>
+      <a href="/api/login">Login with Spotify</a>
     </div>
   )
 }

@@ -1,33 +1,21 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
-import './Profile.css'
+import React, { useEffect, useState } from 'react'
 
-const Profile = ({ token }) => {
+const Profile = () => {
   const [profile, setProfile] = useState(null)
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await axios.get('http://localhost:5001/spotify/me', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        setProfile(response.data)
-      } catch (error) {
-        console.error('Error fetching profile', error)
-      }
-    }
-
-    fetchProfile()
-  }, [token])
+    fetch('/api/me')
+      .then((response) => response.json())
+      .then((data) => setProfile(data))
+      .catch((error) => console.error('Error fetching profile:', error))
+  }, [])
 
   return (
     <div>
+      <h1>Spotify Profile</h1>
       {profile ? (
         <div>
-          <h2>{profile.display_name}</h2>
-          <img src={profile.images[0]?.url} alt="Profile" />
+          <h2>Welcome, {profile.display_name}</h2>
         </div>
       ) : (
         <p>Loading...</p>
