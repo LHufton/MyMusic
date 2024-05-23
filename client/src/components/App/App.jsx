@@ -8,6 +8,7 @@ const App = () => {
   const navigate = useNavigate()
   const backendUrl = import.meta.env.VITE_API_BASE_URL
 
+  // Log the backend URL to ensure it's being set correctly
   console.log('Backend URL:', backendUrl)
 
   useEffect(() => {

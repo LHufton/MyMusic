@@ -8,6 +8,8 @@ import session from 'express-session'
 import passport from 'passport'
 import { Strategy as SpotifyStrategy } from 'passport-spotify'
 
+import spotifyRoutes from './routes/Spotify.js'
+
 // Get the current file's directory
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -41,29 +43,12 @@ passport.use(
       callbackURL: process.env.SPOTIFY_REDIRECT_URI
     },
     (accessToken, refreshToken, expires_in, profile, done) => {
-      return done(null, profile)
+      return done(null, { profile, accessToken })
     }
   )
 )
 
-// Define the login route
-app.get(
-  '/login',
-  passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private'],
-    showDialog: true
-  })
-)
-
-// Define the callback route
-app.get(
-  '/callback',
-  passport.authenticate('spotify', { failureRedirect: '/' }),
-  (req, res) => {
-    // Successful authentication
-    res.redirect('/')
-  }
-)
+app.use('/api', spotifyRoutes)
 
 // Serve static files from the frontend build directory
 const frontendPath = path.join(__dirname, '../client/dist')
