@@ -19,7 +19,11 @@ const PORT = 5001
 
 // Set up session
 app.use(
-  session({ secret: 'your_secret_key', resave: false, saveUninitialized: true })
+  session({
+    secret: process.env.SESSION_SECRET || 'your_secret_key',
+    resave: false,
+    saveUninitialized: true
+  })
 )
 
 // Initialize Passport and restore authentication state, if any, from the session
@@ -61,13 +65,13 @@ app.get(
   }
 )
 
-// Define the root route
-app.get('/', (req, res) => {
-  if (req.isAuthenticated()) {
-    res.send(`Hello ${req.user.displayName}`)
-  } else {
-    res.send('Not logged in')
-  }
+// Serve static files from the frontend build directory
+const frontendPath = path.join(__dirname, '../client/dist')
+app.use(express.static(frontendPath))
+
+// Handle all other routes by serving the frontend
+app.get('*', (req, res) => {
+  res.sendFile('index.html', { root: frontendPath })
 })
 
 try {

@@ -1,29 +1,33 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Profile from '../Profile/Profile'
-import './App.css'
+// import './App.css'
 
 const App = () => {
   const [token, setToken] = useState('')
   const navigate = useNavigate()
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
+  const backendUrl = import.meta.env.VITE_API_BASE_URL
 
   useEffect(() => {
-    const hash = window.location.hash
-    let token = window.localStorage.getItem('token')
-
-    if (!token && hash) {
-      token = hash
-        .substring(1)
-        .split('&')
-        .find((elem) => elem.startsWith('access_token'))
-        .split('=')[1]
-      window.location.hash = ''
-      window.localStorage.setItem('token', token)
+    const checkToken = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/me`, {
+          method: 'GET',
+          credentials: 'include'
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setToken(data.accessToken)
+        } else {
+          console.log('No access token found')
+        }
+      } catch (error) {
+        console.error('Error checking access token:', error)
+      }
     }
 
-    setToken(token)
-  }, [])
+    checkToken()
+  }, [backendUrl])
 
   const logout = () => {
     setToken('')
