@@ -3,7 +3,7 @@ import SpotifyWebApi from 'spotify-web-api-node'
 import dotenv from 'dotenv'
 dotenv.config() // Ensure this is at the top
 
-const router = express.Router()
+const router e = express.Router()
 
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,

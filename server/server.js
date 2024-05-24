@@ -10,7 +10,7 @@ import { Strategy as SpotifyStrategy } from 'passport-spotify'
 import spotifyRoutes from './routes/Spotify.js'
 
 // Load environment variables
-dotenv.config() // Ensure this is at the top
+dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -52,6 +52,14 @@ passport.use(
 )
 
 app.use('/api', spotifyRoutes)
+
+// Force HTTPS on Heroku
+app.use((req, res, next) => {
+  if (req.headers['x-forwarded-proto'] !== 'https') {
+    return res.redirect(['https://', req.get('Host'), req.url].join(''))
+  }
+  next()
+})
 
 const frontendPath = path.join(__dirname, '../client/dist')
 app.use(express.static(frontendPath))
