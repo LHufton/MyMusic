@@ -9,10 +9,16 @@ import passport from 'passport'
 import { Strategy as SpotifyStrategy } from 'passport-spotify'
 import spotifyRoutes from './routes/Spotify.js'
 
-dotenv.config() // Load environment variables
+// Load environment variables
+dotenv.config() // Ensure this is at the top
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+console.log('SPOTIFY_CLIENT_ID:', process.env.SPOTIFY_CLIENT_ID)
+console.log('SPOTIFY_CLIENT_SECRET:', process.env.SPOTIFY_CLIENT_SECRET)
+console.log('SPOTIFY_REDIRECT_URI:', process.env.SPOTIFY_REDIRECT_URI)
+console.log('SESSION_SECRET:', process.env.SESSION_SECRET)
 
 const app = express()
 const PORT = 5001
