@@ -3,7 +3,6 @@ node_modules
 # SSL certificates
 server/SS1/localhost-key.pem
 server/SS1/localhost.pem
-server/SS1/localhost.csr
 
 
 logs
